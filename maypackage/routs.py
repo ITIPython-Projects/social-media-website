@@ -1,8 +1,8 @@
 # import flask
 from maypackage import *
 from werkzeug.utils import secure_filename
-from maypackage.forms import RegistrationForm, LoginForm, SubjectForm
-from maypackage.model import User, Post
+from maypackage.forms import RegistrationForm, LoginForm, PostForm, SubjectForm
+from maypackage.model import User, Post, SubImages
 from flask import request
 import os
 # hashing password
@@ -16,10 +16,35 @@ bcrypt = Bcrypt()
 # login imports
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
     if current_user.is_authenticated:
-        return render_template('index.html')
+        form = PostForm()
+        posts = Post.query.filter_by(type='public')
+        if form.validate_on_submit():
+            with app.app_context():
+                mainimage = request.files['mainimage']
+                if mainimage.filename:
+                    imagename = secure_filename(mainimage.filename)
+                    post = Post(user_id=current_user.id, title=form.title.data, content=form.content.data,
+                                mainImage=imagename, type=request.form.get('type'))
+                    db.session.add(post)
+                    db.session.commit()
+                    mainimage.save(os.path.join(app.config['UPLOAD_FOLDER'], "post", imagename))
+                else:
+                    post = Post(user_id=current_user.id, title=form.title.data, content=form.content.data,
+                                type=request.form.get('type'))
+                    db.session.add(post)
+                    db.session.commit()
+                db.session.flush()
+                subimages = request.files.getlist('images')
+                for subimg in subimages:
+                    imagename = secure_filename(subimg.filename)
+                    subimgObj = SubImages(image=imagename, user_id=post.id)
+                    db.session.add(subimgObj)
+                    db.session.commit()
+                    subimg.save(os.path.join(app.config['UPLOAD_FOLDER'], "post", imagename))
+        return render_template('index.html', form=form, posts=posts)
     return redirect(url_for('login'))
 
 

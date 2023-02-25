@@ -1,7 +1,7 @@
 # flask-sqllacumy
 from maypackage import db, login_manager
 from datetime import datetime
-
+from sqlalchemy.orm import backref
 
 from flask_login import UserMixin
 
@@ -13,7 +13,7 @@ def load_user(user_id):
 
 
 # USER MODEL
-class User(db.Model,UserMixin):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
@@ -62,6 +62,8 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     mainImage = db.Column(db.String(20), nullable=True)
     type = db.Column(db.Integer, nullable=False)
+    subImages = db.relationship('SubImages', backref='author', lazy=True)
+    user = db.relationship("User", backref=backref("user", uselist=False))
 
     def __repr__(self):
         return f"Post: '{self.title}'"
@@ -71,3 +73,6 @@ class SubImages(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image = db.Column(db.String(20), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+
+    def __repr__(self):
+        return f"{self.image}"
