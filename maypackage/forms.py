@@ -1,91 +1,82 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField,EmailField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from .model import User
+
 
 class RegistrationForm(FlaskForm):
     username = StringField(
         'UserName',
         validators=[
-                    DataRequired()
-                    , Length(min=2, max=20)
-                   ]
-                 )
-    email = StringField(
+            DataRequired()
+            , Length(min=2, max=20)
+        ]
+    )
+    email = EmailField(
         'Email',
         validators=[
-                    DataRequired(),
-                    Length(min=2, max=100),
-                    Email()
-                   ]
-                 )
+            DataRequired(),
+            Length(min=2, max=100),
+            Email()
+        ]
+    )
     password = PasswordField(
-        'passowrd',
+        'password',
         validators=[
-                    DataRequired(),
-                   ]
-                 )
-    confirmPassword = PasswordField(
-        'Confirm Password',
-        validators=[
-                    DataRequired(),
-                    EqualTo('password')
-                   ]
-                 )
+            DataRequired(),
+        ]
+    )
     submit = SubmitField(
         'Sign Up',
-                 )
-
-    # custom validation for duplicates
-    def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
-        if user:
-            raise ValidationError('Username already exists')
+    )
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('Email already exists')
 
+
 class LoginForm(FlaskForm):
-    username = StringField(
-        'UserName',
+    email = EmailField(
+        'Email',
         validators=[
-                    DataRequired()
-                    , Length(min=2, max=20)
-                   ]
-                 )
+            DataRequired(),
+            Length(min=2, max=100),
+            Email()
+        ]
+    )
     password = PasswordField(
-        'passowrd',
+        'password',
         validators=[
-                    DataRequired(),
-                   ]
-                 )
+            DataRequired(),
+        ]
+    )
     submit = SubmitField(
-        'Submit',
-                 )
+        'Log In',
+    )
+
+
 class SubjectForm(FlaskForm):
     title = StringField(
         'Title',
         validators=[
-                    DataRequired()
-                    , Length(min=2, max=20)
-                   ]
-                 )
+            DataRequired()
+            , Length(min=2, max=20)
+        ]
+    )
     details = StringField(
         'Details',
         validators=[
-                    DataRequired(),
-                   ]
-                 )
+            DataRequired(),
+        ]
+    )
     title = StringField(
         'Title',
         validators=[
-                    DataRequired()
-                    , Length(min=2, max=20)
-                   ]
-                 )
+            DataRequired()
+            , Length(min=2, max=20)
+        ]
+    )
     submit = SubmitField(
         'Submit',
-                 )
-
+    )
