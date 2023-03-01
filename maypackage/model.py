@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
     image = db.Column(db.String(60), default="dprof.png", nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.now, nullable=False)
     notifications = db.Column(db.Integer, default=0, nullable=False)
+    all_notifications = db.relationship('Notifications', backref='author', lazy=True)
     posts = db.relationship('Post', backref='author', lazy=True)
 
     def friends_number(self):
@@ -32,18 +33,16 @@ class User(db.Model, UserMixin):
             Friends,
             db.and_(self.id == Friends.receiver,
                     User.id == Friends.sender,
-                    )
-        )
+                    ))
         return friends
-    # friends = Friends.query.filter(or_(Friends.sender.like(self.id),
-    #                                    Friends.receiver.like(self.id)))
-    # friends_ids = []
-    # for friend in friends:
-    #     if self.id == friend.sender:
-    #         friends_ids.append(friend.receiver)
-    #     else:
-    #         friends_ids.append(friend.sender)
-    # return User.query.filter(User.id.in_(friends_ids)).all()
+
+    def get_requests(self):
+        user_req = db.session.query(User).join(
+            Requests,
+            db.and_(self.id == Requests.holder,
+                    User.id == Requests.sender,
+                    ))
+        return user_req
 
 
 def __repr__(self):

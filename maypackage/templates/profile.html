@@ -281,29 +281,21 @@
                 <div class="card shadow-sm card-left3 mb-4">
 
                     <div class="card-body">
-                        <h5 class="card-title">Photos<small class="ml-2"><a href="#">.Edit </a></small></h5>
-
-                        <div class="row">
+                        <div class="row no-gutters d-none d-lg-flex">
                             <div class="col-6 p-1">
-                                <a href="{{url_for('static', filename='img/left1.jpg')}}" data-lightbox="id">
-                                    <img src="{{url_for('static', filename='img/left1.jpg')}}" alt="img"
-                                         class="img-fluid my-2">
-                                </a>
-                                <a href="img/left2.jpg" data-lightbox="id"><img src="img/left2.jpg" alt="img"
-                                                                                class="img-fluid my-2"></a>
-                                <a href="img/left3.jpg" data-lightbox="id"><img src="img/left3.jpg" alt="img"
-                                                                                class="img-fluid my-2"></a>
+                                {% for sugfriend in current_user.get_requests()%}
+                                <img src="static/uploads/user/{{sugfriend.image}}" alt="img" width="80px" height="80px"
+                                     class="rounded-circle mb-4">
+                                {%endfor%}
 
                             </div>
-
-
-                            <div class="col-6 p-1">
-                                <a href="img/left4.jpg" data-lightbox="id"><img src="img/left4.jpg" alt="img"
-                                                                                class="img-fluid my-2"></a>
-                                <a href="img/left5.jpg" data-lightbox="id"><img src="img/left5.jpg" alt="img"
-                                                                                class="img-fluid my-2"></a>
-                                <a href="img/left6.jpg" data-lightbox="id"><img src="img/left6.jpg" alt="img"
-                                                                                class="img-fluid my-2"></a>
+                            <div class="col-6 p-1 text-left">
+                                {% for sugfriend in current_user.get_requests()%}
+                                <h6>{{sugfriend.username}}</h6>
+                                <a href="acceptrequest/{{sugfriend.id}}" class="btn btn-outline-info btn-sm mb-3">
+                                    <i class="fas fa-user-friends"></i>Accept Friend
+                                </a>
+                                {%endfor%}
 
                             </div>
 
@@ -359,57 +351,57 @@
 
                     </div>
                     {% if current_user.posts%}
-                        {% for userpost in current_user.posts %}
-                        <hr>
+                    {% for userpost in current_user.posts %}
+                    <hr>
 
-                        <div class="card-body">
-                            <div class="media">
-                                <!--                            USER IMAGE-->
-                                <img src="static/uploads/user/{{ current_user.image }}" alt="User Image" width="55px"
-                                     height="55px"
-                                     class="rounded-circle mr-3">
+                    <div class="card-body">
+                        <div class="media">
+                            <!--                            USER IMAGE-->
+                            <img src="static/uploads/user/{{ current_user.image }}" alt="User Image" width="55px"
+                                 height="55px"
+                                 class="rounded-circle mr-3">
 
-                                <div class="media-body">
-                                    <h5>{{ current_user.username }}</h5>
-                                    <h2 class="card-text text-justify">{{ userpost.title }}</h2>
+                            <div class="media-body">
+                                <h5>{{ current_user.username }}</h5>
+                                <h2 class="card-text text-justify">{{ userpost.title }}</h2>
 
-                                    <!--                                Main Image-->
-                                    <div class="row no-gutters mb-3">
-                                        <div class="col-6 p-1 text-center">
-                                            <img src="static/uploads/post/{{userpost.mainImage}}" alt=" Post Image"
-                                                 class="img-fluid mb-2">
-                                        </div>
+                                <!--                                Main Image-->
+                                <div class="row no-gutters mb-3">
+                                    <div class="col-6 p-1 text-center">
+                                        <img src="static/uploads/post/{{userpost.mainImage}}" alt=" Post Image"
+                                             class="img-fluid mb-2">
                                     </div>
-
-                                    <!--                                Content-->
-                                    <div class="media mb-3">
-                                        <div class="media-body">
-                                            <p class="card-text text-justify">
-                                                {{ userpost.content }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <!--                                Sub Images-->
-                                    <div class="row no-gutters mb-3">
-                                        {% for subImage in userpost.subImages%}
-                                        <div class="col-6 p-1 text-center">
-                                            <img src="static/uploads/post/{{subImage.image}}" alt=" Post Image"
-                                                 class="img-fluid mb-2">
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-
                                 </div>
-                                <small>{{ userpost.created_at }}</small>
+
+                                <!--                                Content-->
+                                <div class="media mb-3">
+                                    <div class="media-body">
+                                        <p class="card-text text-justify">
+                                            {{ userpost.content }}
+                                        </p>
+                                    </div>
+                                </div>
+                                <!--                                Sub Images-->
+                                <div class="row no-gutters mb-3">
+                                    {% for subImage in userpost.subImages%}
+                                    <div class="col-6 p-1 text-center">
+                                        <img src="static/uploads/post/{{subImage.image}}" alt=" Post Image"
+                                             class="img-fluid mb-2">
+                                    </div>
+                                    {% endfor %}
+                                </div>
 
                             </div>
-
+                            <small>{{ userpost.created_at }}</small>
 
                         </div>
-                        {% endfor %}
+
+
+                    </div>
+                    {% endfor %}
 
                     {%else%}
-                        <h1 style="text-alin:center;margin-top:15px"> No Posts Created yet </h1>
+                    <h1 style="text-alin:center;margin-top:15px"> No Posts Created yet </h1>
                     {%endif%}
 
 
@@ -462,10 +454,14 @@
                                 <img src="static/uploads/user/{{sugfriend.image}}" alt="img" width="80px" height="80px"
                                      class="rounded-circle mb-4">
                                 {%endfor%}
+
                             </div>
                             <div class="col-6 p-1 text-left">
                                 {% for sugfriend in current_user.get_friends()%}
                                 <h6>{{sugfriend.username}}</h6>
+                                <a href="addfriend/{{sugfriend.id}}" class="btn btn-outline-info btn-sm mb-3">
+                                    <i class="fas fa-user-friends"></i>Profile
+                                </a>
                                 {%endfor%}
 
                             </div>
@@ -523,6 +519,7 @@
         lightbox.option({
           
         })
+
 
 
 </script>

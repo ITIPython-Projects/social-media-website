@@ -20,7 +20,7 @@ bcrypt = Bcrypt()
 def home():
     if current_user.is_authenticated:
         form = PostForm()
-        posts = Post.query.filter_by(type='public')
+        posts = Post.query.filter(Post.type.in_(['public', 'friends'])).all()
         not_friends = (
             db.session.query(User)
             .outerjoin(
@@ -122,11 +122,22 @@ def add_friend(user_id):
         req = Requests(holder=user_id, sender=current_user.id)
         db.session.add(req)
 
-        notfiy = Notifications(user_id=current_user.id,
+        notfiy = Notifications(user_id=user_id,
                                description=f"{current_user.username} Send You a Friends Request")
         db.session.add(notfiy)
         db.session.commit()
     return redirect(url_for('home'))
+
+
+@app.route('/acceptrequest/<user_id>')
+def acceptrequest(user_id):
+    with app.app_context():
+        friend = Friends(sender=user_id, receiver=current_user.id)
+        db.session.add(friend)
+
+        Requests.query.filter_by(holder=current_user.id, sender=user_id).delete()
+        db.session.commit()
+    return redirect(url_for('profile'))
 
 
 @app.route('/profile')
