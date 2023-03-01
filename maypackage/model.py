@@ -2,6 +2,7 @@
 from maypackage import db, login_manager
 from datetime import datetime
 from sqlalchemy.orm import backref
+from sqlalchemy import or_
 
 from flask_login import UserMixin
 
@@ -26,10 +27,27 @@ class User(db.Model, UserMixin):
     def friends_number(self):
         return Friends.query.filter_by(receiver=self.id).count()
 
-    # subjects = db.relationship('Subject', backref='author', lazy=True)
+    def get_friends(self):
+        friends = db.session.query(User).join(
+            Friends,
+            db.and_(self.id == Friends.receiver,
+                    User.id == Friends.sender,
+                    )
+        )
+        return friends
+    # friends = Friends.query.filter(or_(Friends.sender.like(self.id),
+    #                                    Friends.receiver.like(self.id)))
+    # friends_ids = []
+    # for friend in friends:
+    #     if self.id == friend.sender:
+    #         friends_ids.append(friend.receiver)
+    #     else:
+    #         friends_ids.append(friend.sender)
+    # return User.query.filter(User.id.in_(friends_ids)).all()
 
-    def __repr__(self):
-        return f"{self.username}"
+
+def __repr__(self):
+    return f"{self.username}"
 
 
 class Friends(db.Model):
