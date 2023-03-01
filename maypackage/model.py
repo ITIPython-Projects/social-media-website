@@ -23,6 +23,9 @@ class User(db.Model, UserMixin):
     notifications = db.Column(db.Integer, default=0, nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
 
+    def friends_number(self):
+        return Friends.query.filter_by(receiver=self.id).count()
+
     # subjects = db.relationship('Subject', backref='author', lazy=True)
 
     def __repr__(self):

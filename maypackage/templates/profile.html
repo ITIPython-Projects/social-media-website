@@ -1,85 +1,10 @@
 {% extends "base.html" %}
 {% block title %}
-<title>Home</title>
+<title> Profile </title>
 {% endblock title %}
 
 {% block content %}
 
-
-<!---------------------------Modal Create Project Section  satrts------------------->
-
-<div class="modal fade" id="modal_create_Post">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-
-        <div class="modal-content">
-            <!--            Close Button & Header-->
-            <div class="modal-header">
-                <div class="modal-title h4">Create Post</div>
-
-                <button type="button" class="close" data-dismiss="modal" style="color:red">&times;</button>
-            </div>
-
-            <div class="modal-body">
-                <form action="" method="POST" enctype="multipart/form-data">
-                    {{ form.hidden_tag() }}
-                    <fieldset class="form-group">
-
-                        <div class="form-group">
-                            {{form.title.label(class = "form-control-label")}}
-
-                            {% if form.title.errors %}
-                            {{form.title(class = "form-control is-invalid" )}}
-                            {% for error in form.title.errors %}
-                            <span style="color:red">{{ error }}</span>
-                            {% endfor %}
-                            {%else%}
-                            {{form.title(class = 'form-control')}}
-                            {%endif%}
-                        </div>
-                        <div class="form-group">
-                            {{form.content.label(class = "form-control-label")}}
-                            {% if form.content.errors %}
-                            {{form.content(class = "form-control is-invalid" )}}
-                            {% for error in form.content.errors %}
-                            <span style="color:red">{{ error }}</span>
-                            {% endfor %}
-                            {%else%}
-                            {{form.content(class = 'form-control')}}
-                            {%endif%}
-                        </div>
-
-                        <div class="form-group">
-                            <label for="type">Choose a Type:</label>
-                            <select name="type" id="type">
-                                <option value="public">Public</option>
-                                <option value="friends">Friends</option>
-                                <option value="onlyme">Only Me</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="mainimage">Select MainImage:</label>
-                            <input class="form-control" type="file" id="mainimage" name="mainimage" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="images">Select Images:</label>
-                            <input class="form-control" type="file" id="images" name="images" accept="image/*" multiple>
-                        </div>
-
-                        <div class="form-group">
-                            {{form.submit(class="btn btn-outline-info")}}
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-
-
-    </div>
-
-
-</div>
-
-<!-------------------------------Modal Create Project Ends---------------------------->
 
 <!---------------------------MOdal Section  satrts------------------->
 
@@ -301,18 +226,17 @@
                     <img src="{{url_for('static', filename='img/photo-1455448972184-de647495d428.jpg')}}" alt=""
                          class="card-img-top img-fluid">
                     <div class="card-body text-center ">
-                        <img src="{{url_for('static', filename='img/avatar-dhg.png')}}" alt="img" width="120px"
+                        <img src="static/uploads/user/{{current_user.image}}" alt="User Profile Image" width="120px"
                              height="120px"
                              class="rounded-circle mt-n5">
-                        <h5 class="card-title">Dave Gamache</h5>
-                        <p class="card-text text-justify mb-2">I wish i was a little bit taller, wish i was a baller,
+                        <h5 class="card-title">{{current_user.username}}</h5>
+                        <p class="card-text text-justify mb-2">
+                            I wish i was a little bit taller, wish i was a baller,
                             wish i had a girl… also.</p>
                         <ul class="list-unstyled nav justify-content-center">
                             <a href="#" class="text-dark text-decoration-none">
-                                <li class="nav-item">Friends <br> <strong>12M</strong></li>
-                            </a>
-                            <a href="#" class="text-dark text-decoration-none">
-                                <li class="nav-item">Enimes <br> <strong>1</strong></li>
+                                <li class="nav-item">Friends Number<br>
+                                    <strong style="color:blue">{{current_user.friends_number()}}</strong></li>
                             </a>
                         </ul>
 
@@ -435,24 +359,24 @@
 
                     </div>
 
-                    {% for post in posts %}
+                    {% for userpost in current_user.posts %}
                     <hr>
 
                     <div class="card-body">
                         <div class="media">
                             <!--                            USER IMAGE-->
-                            <img src="static/uploads/user/{{ post.user.image }}" alt="User Image" width="55px"
+                            <img src="static/uploads/user/{{ current_user.image }}" alt="User Image" width="55px"
                                  height="55px"
                                  class="rounded-circle mr-3">
 
                             <div class="media-body">
-                                <h5>{{ post.user.username }}</h5>
-                                <h2 class="card-text text-justify">{{ post.title }}</h2>
+                                <h5>{{ current_user.username }}</h5>
+                                <h2 class="card-text text-justify">{{ userpost.title }}</h2>
 
                                 <!--                                Main Image-->
                                 <div class="row no-gutters mb-3">
                                     <div class="col-6 p-1 text-center">
-                                        <img src="static/uploads/post/{{post.mainImage}}" alt=" Post Image"
+                                        <img src="static/uploads/post/{{userpost.mainImage}}" alt=" Post Image"
                                              class="img-fluid mb-2">
                                     </div>
                                 </div>
@@ -461,13 +385,13 @@
                                 <div class="media mb-3">
                                     <div class="media-body">
                                         <p class="card-text text-justify">
-                                            {{ post.content }}
+                                            {{ userpost.content }}
                                         </p>
                                     </div>
                                 </div>
                                 <!--                                Sub Images-->
                                 <div class="row no-gutters mb-3">
-                                    {% for subImage in post.subImages%}
+                                    {% for subImage in userpost.subImages%}
                                     <div class="col-6 p-1 text-center">
                                         <img src="static/uploads/post/{{subImage.image}}" alt=" Post Image"
                                              class="img-fluid mb-2">
@@ -476,7 +400,7 @@
                                 </div>
 
                             </div>
-                            <small>{{ post.created_at }}</small>
+                            <small>{{ userpost.created_at }}</small>
 
                         </div>
 
@@ -654,6 +578,7 @@
         lightbox.option({
           
         })
+
 
 </script>
 

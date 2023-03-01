@@ -2,7 +2,7 @@
 from maypackage import *
 from werkzeug.utils import secure_filename
 from maypackage.forms import RegistrationForm, LoginForm, PostForm, SubjectForm
-from maypackage.model import User, Post, SubImages
+from maypackage.model import *
 from flask import request
 import os
 # hashing password
@@ -21,6 +21,27 @@ def home():
     if current_user.is_authenticated:
         form = PostForm()
         posts = Post.query.filter_by(type='public')
+        not_friends = (
+            db.session.query(User)
+            .outerjoin(
+                Friends,
+                db.and_(
+                    current_user.id == Friends.receiver,
+                    User.id == Friends.sender,
+                )
+            )
+            .outerjoin(
+                Requests,
+                db.and_(
+                    current_user.id == Requests.sender,
+                    User.id == Requests.holder,
+                )
+            )
+            .filter(Friends.id == None)
+            .filter(Requests.id == None)
+            .filter(User.id != current_user.id)
+            .all()
+        )
         if form.validate_on_submit():
             with app.app_context():
                 mainimage = request.files['mainimage']
@@ -44,7 +65,7 @@ def home():
                     db.session.add(subimgObj)
                     db.session.commit()
                     subimg.save(os.path.join(app.config['UPLOAD_FOLDER'], "post", imagename))
-        return render_template('index.html', form=form, posts=posts)
+        return render_template('index.html', form=form, posts=posts, not_friends=not_friends)
     return redirect(url_for('login'))
 
 
@@ -95,7 +116,29 @@ def logout():
     return redirect(url_for('login'))
 
 
+@app.route('/addfriend/<user_id>')
+def add_friend(user_id):
+    with app.app_context():
+        req = Requests(holder=user_id, sender=current_user.id)
+        db.session.add(req)
+
+        notfiy = Notifications(user_id=current_user.id,
+                               description=f"{current_user.username} Send You a Friends Request")
+        db.session.add(notfiy)
+        db.session.commit()
+    return redirect(url_for('home'))
+
+
+@app.route('/profile')
+def profile():
+    if current_user.is_authenticated:
+        friends = Friends.query.filter_by(receiver=current_user.id)
+        return render_template('profile.html', friends=friends)
+    return redirect(url_for('login'))
+
+
 # -------------- POSTS ------------------------
+
 
 @app.route('/subjects', methods=['GET', 'POST'])
 def subject_Add():

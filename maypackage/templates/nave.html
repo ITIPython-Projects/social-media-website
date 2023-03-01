@@ -11,11 +11,11 @@
 
     <div class="collapse navbar-collapse" id="responsive">
         <ul class="navbar-nav mr-auto text-capitalize">
+            {% if current_user.is_authenticated %}
             <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link active">home</a></li>
-            <li class="nav-item"><a href="profile.html" class="nav-link">profile</a></li>
+            <li class="nav-item"><a href="{{ url_for('profile') }}" class="nav-link">profile</a></li>
             <li class="nav-item"><a href="#modalview" class="nav-link" data-toggle="modal">messages</a></li>
             <li class="nav-item"><a href="notification.html" class="nav-link">docs</a></li>
-            {% if current_user.is_authenticated %}
             <li class="nav-item"><a href="#modal_create_Post" class="nav-link" data-toggle="modal">create Post</a></li>
             <li class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link">logout</a></li>
             {% else %}
